@@ -1,1 +1,0 @@
-/home/kirill/raketa/nok/build/CMakeFiles/nok.dir

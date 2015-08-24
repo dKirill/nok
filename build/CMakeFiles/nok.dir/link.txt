@@ -1,1 +1,0 @@
-/usr/bin/c++       CMakeFiles/nok.dir/main.cpp.o  -o nok -rdynamic 
