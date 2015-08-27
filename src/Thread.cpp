@@ -5,14 +5,7 @@
 /*--------------------------------------------------------------------------*/
 
 /***********************************************/
-void runHelper(Thread* const thread)
-{
-	thread->run();
-}
-
-/***********************************************/
-/***********************************************/
-Thread::Thread() : _active(false), _shouldRun(false), _thread(runHelper, this)
+Thread::Thread() : _active(false), _shouldRun(false), _thread(runHelper<Thread>, this)
 {
 
 }
@@ -24,6 +17,15 @@ bool Thread::active() const
 }
 
 /***********************************************/
+void Thread::add(const NumberInt number)
+{
+	if(busy())
+		THROW("Попытка занять занятый поток");
+
+	_number = number;
+}
+
+/***********************************************/
 bool Thread::busy() const
 {
 	//TODO
@@ -31,9 +33,15 @@ bool Thread::busy() const
 }
 
 /***********************************************/
+void Thread::join()
+{
+	_thread.join();
+}
+
+/***********************************************/
 void Thread::run()
 {
-	D("&thread=" << reinterpret_cast<unsigned long long>(this) << " starts");
+	D("thread=" << _thread.get_id() << " starts");
 	_active = true;
 	_shouldRun = true;
 
@@ -47,22 +55,22 @@ void Thread::run()
 			std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	}
 
-	D("&thread=" << reinterpret_cast<unsigned long long>(this) << " stops");
+	D("&thread=" << _thread.get_id() << " stops");
 }
 
 /***********************************************/
 void Thread::terminate()
 {
-	std::lock_guard<std::mutex> guard(_mutex);
+	std::lock_guard<decltype(_mutex)> guard(_mutex);
 
 	if(!active())
 	{
-		ERR("&thread=" << reinterpret_cast<unsigned long long>(this) << " isn't running");
+		ERR("&thread=" << _thread.get_id() << " isn't running");
 
 		return;
 	}
 	_shouldRun = false;
 	_thread.join();
 	_active = false;
-	D("&thread=" << reinterpret_cast<unsigned long long>(this) << " terminated");
+	D("&thread=" << _thread.get_id() << " terminated");
 }

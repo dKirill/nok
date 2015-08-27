@@ -1,30 +1,32 @@
-#ifndef THREADPOOL_H
-#define THREADPOOL_H
+#ifndef QUEUE_H
+#define QUEUE_H
 
 /*--------------------------------------------------------------------------*/
+#include <mutex>
 #include <queue>
-#include <vector>
+#include <thread>
 /*--------------------------------------------------------------------------*/
-#include "Thread.h"
+#include "Global.h"
+#include "ThreadPool.h"
 /*--------------------------------------------------------------------------*/
 
-class ThreadPool
+class Queue
 {
 public:
-	ThreadPool();
+	Queue();
 
 	void add(const NumberInt number);
 	void join();
+	void run();
 	void setThreadNumber(const ThreadInt threadsNumber);
 
 private:
-	std::mutex _mutex;
 
-	/**
-	  @brief _threads пул потоков; указатели, чтобы не копировались в контейнере
-	*/
-	std::vector<pThread> _threads;
-	std::queue<pThread> _freeThreads;
+	std::mutex _mutex;
+	ThreadPool _pool;
+	std::queue<NumberInt> _queue;
+	Guarded<bool> _shouldRun;
+	std::thread _thread;
 };
 
-#endif // THREADPOOL_H
+#endif // QUEUE_H

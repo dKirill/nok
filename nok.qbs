@@ -12,6 +12,8 @@ CppApplication {
     files: [
         "src/Global.h",
         "src/Guarded.h",
+        "src/Queue.cpp",
+        "src/Queue.h",
         "src/Thread.cpp",
         "src/Thread.h",
         "src/ThreadPool.cpp",

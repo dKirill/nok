@@ -25,12 +25,19 @@ public:
 	virtual ~Exception() override { }
 
 	/** Returns a C-style character string describing the general cause
-	 *  of the current error.  */
-	virtual const char* what() const noexcept { return _what.c_str(); }
+		 *  of the current error.  */
+	virtual const char* what() const noexcept override { return _what.c_str(); }
 
 private:
 	std::string _what;
 };
+
+//для запуска метода в std::thread
+template<typename ThreadType>
+void runHelper(ThreadType* const thread)
+{
+	thread->run();
+}
 
 //defines
 #ifdef DEBUG

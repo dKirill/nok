@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------------*/
 #include <limits>
 /*--------------------------------------------------------------------------*/
-#include "ThreadPool.h"
+#include "Queue.h"
 /*--------------------------------------------------------------------------*/
 
 /***********************************************/
@@ -10,28 +10,60 @@ int main(int argc, char* argv[]) //как аргумент можно перед
 	try
 	{
 		ThreadInt threadNumber;
-		ThreadPool pool;
-		int64_t number;
+		Queue queue;
+		NumberInt number;
+		int32_t numOfNums;
 
+		//разбор арг-ов командной строки (должно быть
 		switch(argc)
 		{
-			case(1):
+			case(2):
 			{
-				threadNumber = std::thread::hardware_concurrency();
-				D("Используется дефолтное количество потоков=" << threadNumber);
+				try
+				{
+					numOfNums = std::stoi(argv[1]);
+				}
+				catch(const std::invalid_argument&)
+				{
+					THROW("Аргумент не число, а должен быть");
+				}
+
+				if(numOfNums < 0)
+					THROW("Неправильный аргумент; Допустимые значения [0, " << std::numeric_limits<decltype(numOfNums)>::max() << "]\n");
+
+				threadNumber = std::thread::hardware_concurrency() - 1; // -1 - текущий
+
 				break;
 			}
-			case(2):
+			case(3):
 			{
 				int64_t temp;
 
-				temp = std::stoi(argv[1]);
+				try
+				{
+					numOfNums = std::stoi(argv[1]);
+				}
+				catch(const std::invalid_argument&)
+				{
+					THROW("Аргумент не число, а должен быть");
+				}
 
-				if(temp > std::numeric_limits<ThreadInt>::max() || temp < 1)
-					THROW("Неправильный аргумент; Допустимые значения [1, " << std::numeric_limits<ThreadInt>::max() << "]\n");
+				if(numOfNums < 0)
+					THROW("Неправильный аргумент; Допустимые значения [0, " << std::numeric_limits<decltype(numOfNums)>::max() << "]\n");
+
+				try
+				{
+					temp = std::stoi(argv[2]);
+				}
+				catch(const std::invalid_argument&)
+				{
+					THROW("Аргумент не число, а должен быть");
+				}
+
+				if(temp > std::numeric_limits<decltype(threadNumber)>::max() || temp < 1)
+					THROW("Неправильный аргумент; Допустимые значения [1, " << std::numeric_limits<decltype(threadNumber)>::max() << "]\n");
 
 				threadNumber = temp;
-				D("Используется количество потоков=" << threadNumber);
 
 				break;
 			}
@@ -41,19 +73,24 @@ int main(int argc, char* argv[]) //как аргумент можно перед
 			}
 		}
 
-		pool.setThreadNumber(threadNumber);
+		D("Используемое количество потоков=" << threadNumber);
+		queue.setThreadNumber(threadNumber);
 
+		D("Начало считывания " << numOfNums << " чисел");
 		//считывание, пока дают числа
-		while(std::cin >> number)
+		while(numOfNums--)
 		{
+			std::cin >> number;
+
 			if(number > maxNumber || number < 0)
 				THROW("Неправильное число; Допустимые значения [0, " << maxNumber << "]");
 
-			pool.add(number);
+			queue.add(number);
 		}
 
+		D("Считывание окончено");
 		//ожидание выполнения всех потоков
-		pool.join();
+		queue.join();
 		//TODO вывести результаты
 	}
 	catch(const std::exception& e)
@@ -67,6 +104,6 @@ int main(int argc, char* argv[]) //как аргумент можно перед
 		return 2;
 	}
 
-    return 0;
+	return 0;
 }
 

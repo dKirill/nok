@@ -18,7 +18,7 @@ public:
 	/***********************************************/
 	Guarded& operator=(const Value& refval)
 	{
-		std::lock_guard<std::mutex> guard(_mutex);
+		std::lock_guard<decltype(_mutex)> guard(_mutex);
 
 		_value = refval;
 
@@ -28,7 +28,7 @@ public:
 	/***********************************************/
 	Value value() const
 	{
-		std::lock_guard<std::mutex> guard(_mutex);
+		std::lock_guard<decltype(_mutex)> guard(_mutex);
 
 		return _value;
 	}
