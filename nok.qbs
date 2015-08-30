@@ -9,7 +9,10 @@ CppApplication {
     cpp.cxxStandardLibrary: "libstdc++"
     cpp.defines: ["DEBUG"]
     cpp.dynamicLibraries: "pthread"
+    //cpp.includePaths: [""]
     files: [
+        "src/Computer.cpp",
+        "src/Computer.h",
         "src/Global.h",
         "src/Guarded.h",
         "src/Queue.cpp",

@@ -5,14 +5,15 @@
 /*--------------------------------------------------------------------------*/
 
 /***********************************************/
-int main(int argc, char* argv[]) //как аргумент можно передать желаемое количество потоков [1, 2^16)
+int main(int argc, char* argv[]) //аргументы: количество чисел (обязательно), количество потоков (необяз.)
 {
 	try
 	{
-		ThreadInt threadNumber;
-		Queue queue;
 		NumberInt number;
 		int32_t numOfNums;
+		Queue queue;
+		PrimeToAccNumber result;
+		ThreadInt threadNumber;
 
 		//разбор арг-ов командной строки (должно быть
 		switch(argc)
@@ -31,7 +32,7 @@ int main(int argc, char* argv[]) //как аргумент можно перед
 				if(numOfNums < 0)
 					THROW("Неправильный аргумент; Допустимые значения [0, " << std::numeric_limits<decltype(numOfNums)>::max() << "]\n");
 
-				threadNumber = std::thread::hardware_concurrency() - 1; // -1 - текущий
+				threadNumber = std::thread::hardware_concurrency(); // не выч. основной и "очереди", т.к. они много спят
 
 				break;
 			}
@@ -82,8 +83,8 @@ int main(int argc, char* argv[]) //как аргумент можно перед
 		{
 			std::cin >> number;
 
-			if(number > maxNumber || number < 0)
-				THROW("Неправильное число; Допустимые значения [0, " << maxNumber << "]");
+			if(number > maxNumber || number <= 0) //0 нельзя т.к. на него нельзя делить
+				THROW("Неправильное число; Допустимые значения [1, " << maxNumber << "]");
 
 			queue.add(number);
 		}
@@ -91,7 +92,14 @@ int main(int argc, char* argv[]) //как аргумент можно перед
 		D("Считывание окончено");
 		//ожидание выполнения всех потоков
 		queue.join();
-		//TODO вывести результаты
+		result = queue.result();
+
+		D("Получен результат:");
+		for(auto const& pair : result)
+		{
+			for(uint32_t i = 0; i < pair.second; ++i)
+				std::cout << pair.first << '\n';
+		}
 	}
 	catch(const std::exception& e)
 	{

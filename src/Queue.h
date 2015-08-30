@@ -17,6 +17,7 @@ public:
 
 	void add(const NumberInt number);
 	void join();
+	PrimeToAccNumber result() const;
 	void run();
 	void setThreadNumber(const ThreadInt threadsNumber);
 

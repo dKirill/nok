@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 3.4.2, 2015-08-28T01:11:15. -->
+<!-- Written by QtCreator 3.4.2, 2015-08-30T22:57:17. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -70,7 +70,7 @@
    <value type="int" key="ProjectExplorer.Target.ActiveDeployConfiguration">0</value>
    <value type="int" key="ProjectExplorer.Target.ActiveRunConfiguration">0</value>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.BuildConfiguration.0">
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/home/kirill/build-nok-qt5_clang_x64-Debug</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/home/kirill/nok/build</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="bool" key="ProjectExplorer.BuildStep.Enabled">true</value>
@@ -116,7 +116,7 @@
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qbs.QbsBuildConfiguration</value>
    </valuemap>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.BuildConfiguration.1">
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/home/kirill/build-nok-qt5_clang_x64-Release</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/home/kirill/nok/build</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="bool" key="ProjectExplorer.BuildStep.Enabled">true</value>
@@ -131,7 +131,7 @@
       <value type="bool" key="Qbs.DryKeepGoing">false</value>
       <value type="bool" key="Qbs.DryRun">false</value>
       <value type="bool" key="Qbs.Install">true</value>
-      <value type="int" key="Qbs.MaxJobs">0</value>
+      <value type="int" key="Qbs.MaxJobs">2</value>
       <value type="bool" key="Qbs.ShowCommandLines">false</value>
      </valuemap>
      <value type="int" key="ProjectExplorer.BuildStepList.StepsCount">1</value>
@@ -216,7 +216,7 @@
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">nok</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">nok2</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qbs.RunConfiguration:nok.qtc_qt5_clan_69fed501---Qbs.RC.NameSeparator---nok</value>
-    <value type="QString" key="Qbs.RunConfiguration.CommandLineArguments">5 10</value>
+    <value type="QString" key="Qbs.RunConfiguration.CommandLineArguments">2</value>
     <value type="QString" key="Qbs.RunConfiguration.UserWorkingDirectory"></value>
     <value type="uint" key="RunConfiguration.QmlDebugServerPort">3768</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>

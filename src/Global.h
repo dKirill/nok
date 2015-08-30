@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <exception>
 #include <iostream>
-#include <set>
+#include <map>
 #include <sstream>
 /*--------------------------------------------------------------------------*/
 
@@ -14,6 +14,7 @@ const uint16_t maxNumber = 10000;
 
 //aliases
 using NumberInt = uint16_t; //по заданию макс. значение 10000
+using PrimeToAccNumber = std::map<uint16_t, uint32_t>; //ни к чему 8 байтники
 using ThreadInt = uint16_t; //макс. кол. потоков 2^16
 
 //custom exception
@@ -32,18 +33,11 @@ private:
 	std::string _what;
 };
 
-//для запуска метода в std::thread
-template<typename ThreadType>
-void runHelper(ThreadType* const thread)
-{
-	thread->run();
-}
-
 //defines
 #ifdef DEBUG
 #define D(x) std::cout << x << '\n';
 #define ERR(x) std::cerr << x << '\n';
-#elif
+#else
 #define D(x) ;
 #define ERR(x) ;
 #endif

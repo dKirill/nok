@@ -5,19 +5,25 @@
 #include <queue>
 #include <vector>
 /*--------------------------------------------------------------------------*/
+#include "Computer.h"
 #include "Thread.h"
 /*--------------------------------------------------------------------------*/
 
-class ThreadPool
+class ThreadPool : public ThreadDelegate
 {
 public:
 	ThreadPool();
+	virtual ~ThreadPool() override;
 
 	void add(const NumberInt number);
 	void join();
+	PrimeToAccNumber nok() const;
 	void setThreadNumber(const ThreadInt threadsNumber);
+	virtual void threadIsFree(pThread thread) override;
 
 private:
+	Computer _computer;
+	PrimeToAccNumber _nok;
 	std::mutex _mutex;
 
 	/**
