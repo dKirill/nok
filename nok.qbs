@@ -3,7 +3,7 @@ import qbs
 CppApplication {
     type: "application" // To suppress bundle generation on Mac
     consoleApplication: true
-    cpp.compilerName: "clang++"
+    cpp.compilerName: "g++"
     cpp.cxxFlags: "-Weverything", "-Werror"
     cpp.cxxLanguageVersion: "c++11"
     cpp.cxxStandardLibrary: "libstdc++"
