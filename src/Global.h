@@ -13,9 +13,13 @@
 const uint16_t maxNumber = 10000;
 
 //aliases
-using NumberInt = uint16_t; //по заданию макс. значение 10000
-using PrimeToAccNumber = std::map<uint16_t, uint32_t>; //ни к чему 8 байтники
-using ThreadInt = uint16_t; //макс. кол. потоков 2^16
+//using NumberInt = uint16_t; //по заданию макс. значение 10000
+//using PrimeToAccNumber = std::map<uint16_t, uint32_t>; //ни к чему 8 байтники
+//using ThreadInt = uint16_t; //макс. кол. потоков 2^16
+
+typedef uint16_t NumberInt;
+typedef std::map<uint16_t, uint32_t> PrimeToAccNumber;
+typedef uint16_t ThreadInt;
 
 //custom exception
 class Exception : public std::exception
@@ -23,11 +27,11 @@ class Exception : public std::exception
 public:
 	Exception() noexcept { }
 	Exception(const std::string what_) noexcept : _what(what_) { }
-	virtual ~Exception() override { }
+        virtual ~Exception() noexcept /*override*/ { }
 
 	/** Returns a C-style character string describing the general cause
 		 *  of the current error.  */
-	virtual const char* what() const noexcept override { return _what.c_str(); }
+        virtual const char* what() const noexcept /*override*/ { return _what.c_str(); }
 
 private:
 	std::string _what;

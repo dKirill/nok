@@ -12,7 +12,8 @@
 /*--------------------------------------------------------------------------*/
 
 class Thread;
-using pThread = std::shared_ptr<Thread>;
+//using pThread = std::shared_ptr<Thread>;
+typedef std::shared_ptr<Thread> pThread;
 
 class ThreadDelegate
 {
@@ -42,7 +43,7 @@ private:
 	Guarded<bool> _busy;
 	const Computer& _computer;
 	std::condition_variable _cond;
-	ThreadDelegate* _delegate = nullptr;
+        ThreadDelegate* _delegate/* = nullptr*/;
 	PrimeToAccNumber _nok;
 	mutable std::mutex _mutex;
 	Guarded<NumberInt> _number;
