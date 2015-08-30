@@ -25,16 +25,16 @@ typedef uint16_t ThreadInt;
 class Exception : public std::exception
 {
 public:
-	Exception() noexcept { }
-	Exception(const std::string what_) noexcept : _what(what_) { }
-        virtual ~Exception() noexcept /*override*/ { }
+    Exception() noexcept { }
+    Exception(const std::string what_) noexcept : _what(what_) { }
+    virtual ~Exception() noexcept /*override*/ { }
 
-	/** Returns a C-style character string describing the general cause
-		 *  of the current error.  */
-        virtual const char* what() const noexcept /*override*/ { return _what.c_str(); }
+    /** Returns a C-style character string describing the general cause
+                 *  of the current error.  */
+    virtual const char* what() const noexcept /*override*/ { return _what.c_str(); }
 
 private:
-	std::string _what;
+    std::string _what;
 };
 
 //defines

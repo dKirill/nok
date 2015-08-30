@@ -9,33 +9,33 @@ template<typename Value>
 class Guarded
 {
 public:
-	/***********************************************/
-	Guarded() { }
+    /***********************************************/
+    Guarded() { }
 
-	/***********************************************/
-	Guarded(const Value& refval) : _value(refval) { }
+    /***********************************************/
+    Guarded(const Value& refval) : _value(refval) { }
 
-	/***********************************************/
-	Guarded& operator=(const Value& refval)
-	{
-		std::lock_guard<decltype(_mutex)> guard(_mutex);
+    /***********************************************/
+    Guarded& operator=(const Value& refval)
+    {
+        std::lock_guard<decltype(_mutex)> guard(_mutex);
 
-		_value = refval;
+        _value = refval;
 
-		return *this;
-	}
+        return *this;
+    }
 
-	/***********************************************/
-	Value value() const
-	{
-		std::lock_guard<decltype(_mutex)> guard(_mutex);
+    /***********************************************/
+    Value value() const
+    {
+        std::lock_guard<decltype(_mutex)> guard(_mutex);
 
-		return _value;
-	}
+        return _value;
+    }
 
 private:
-	Value _value;
-	mutable std::mutex _mutex;
+    Value _value;
+    mutable std::mutex _mutex;
 };
 
 #endif // GUARDED
