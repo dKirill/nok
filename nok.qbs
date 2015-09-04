@@ -7,7 +7,7 @@ CppApplication {
     cpp.cxxFlags: "-Weverything", "-Werror"
     cpp.cxxLanguageVersion: "c++11"
     cpp.cxxStandardLibrary: "libstdc++"
-    cpp.defines: [/*"DEBUG", */"MEASURE"]
+    cpp.defines: [/*"DEBUG", "MEASURE"*/]
     cpp.dynamicLibraries: "pthread"
     //cpp.includePaths: [""]
     files: [
