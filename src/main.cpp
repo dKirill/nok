@@ -5,113 +5,123 @@
 /*--------------------------------------------------------------------------*/
 
 /***********************************************/
-int main(int argc, char* argv[]) //аргументы: количество чисел (обязательно), количество потоков (необяз.)
+int main(int argc, char* argv[]) //аргументы: количество потоков (необяз.)
 {
-    try
-    {
-        NumberInt number;
-        int32_t numOfNums;
-        Queue queue;
-        PrimeToAccNumber result;
-        ThreadInt threadNumber;
+	try
+	{
+		Queue queue;
+		PrimeToAccNumber result;
+		ThreadInt threadNumber;
+#ifdef MEASURE
+		uint32_t numOfNums = 0;
+		decltype(std::chrono::high_resolution_clock::now()) start, end;
+#endif
 
-        //разбор арг-ов командной строки (должно быть
-        switch(argc)
-        {
-            case(2):
-            {
-                try
-                {
-                    numOfNums = std::stoi(argv[1]);
-                }
-                catch(const std::invalid_argument&)
-                {
-                    THROW("Аргумент не число, а должен быть");
-                }
+		//разбор арг-ов командной строки
+		switch(argc)
+		{
+			case(1):
+			{
+				threadNumber = std::thread::hardware_concurrency(); // не выч. основной и "очереди", т.к. они много спят
 
-                if(numOfNums < 0)
-                    THROW("Неправильный аргумент; Допустимые значения [0, " << std::numeric_limits<decltype(numOfNums)>::max() << "]\n");
+				if(threadNumber == 0) //в старых библиотеках может быть не реализовано..
+					threadNumber = defaultThreadNumber;
 
-                threadNumber = std::thread::hardware_concurrency(); // не выч. основной и "очереди", т.к. они много спят
+				break;
+			}
+			case(2):
+			{
+				int64_t temp;
 
-                break;
-            }
-            case(3):
-            {
-                int64_t temp;
+				try
+				{
+					temp = std::stoi(argv[1]);
+				}
+				catch(const std::invalid_argument&)
+				{
+					THROW("Аргумент не число, а должен быть");
+				}
 
-                try
-                {
-                    numOfNums = std::stoi(argv[1]);
-                }
-                catch(const std::invalid_argument&)
-                {
-                    THROW("Аргумент не число, а должен быть");
-                }
+				if(temp > std::numeric_limits<decltype(threadNumber)>::max() || temp > maxThreadNumber || temp < 1)
+					THROW("Неправильный аргумент; Допустимые значения [1, " << std::numeric_limits<decltype(threadNumber)>::max() << "]\n");
 
-                if(numOfNums < 0)
-                    THROW("Неправильный аргумент; Допустимые значения [0, " << std::numeric_limits<decltype(numOfNums)>::max() << "]\n");
+				threadNumber = temp;
 
-                try
-                {
-                    temp = std::stoi(argv[2]);
-                }
-                catch(const std::invalid_argument&)
-                {
-                    THROW("Аргумент не число, а должен быть");
-                }
+				break;
+			}
+			default:
+			{
+				THROW("Неправильное количество аргументов");
+			}
+		}
 
-                if(temp > std::numeric_limits<decltype(threadNumber)>::max() || temp < 1)
-                    THROW("Неправильный аргумент; Допустимые значения [1, " << std::numeric_limits<decltype(threadNumber)>::max() << "]\n");
+		D("Используемое количество потоков=" << threadNumber);
+		queue.setThreadNumber(threadNumber);
 
-                threadNumber = temp;
+#ifdef MEASURE
+		start = std::chrono::high_resolution_clock::now();
+#endif
+		D("Начало считывания");
+		//считывание, пока дают числа
+		for(std::string line; std::getline(std::cin, line); )
+		{
+			NumberInt number;
 
-                break;
-            }
-            default:
-            {
-                THROW("Неправильное количество аргументов");
-            }
-        }
+			if(line.empty())
+			{
+				D("Введена пустая строка, интепретируется как завершение ввода");
+				break;
+			}
 
-        D("Используемое количество потоков=" << threadNumber);
-        queue.setThreadNumber(threadNumber);
+			try
+			{
+				number = std::stoi(line);
+			}
+			catch(const std::invalid_argument&)
+			{
+				THROW("В stdin передано не число, так нельзя");
+			}
 
-        D("Начало считывания " << numOfNums << " чисел");
-        //считывание, пока дают числа
-        while(numOfNums--)
-        {
-            std::cin >> number;
+			if(number > maxNumber || number <= 0) //0 нельзя т.к. на него нельзя делить
+				THROW("Неправильное число; Допустимы целые числа [1, " << maxNumber << "]");
 
-            if(number > maxNumber || number <= 0) //0 нельзя т.к. на него нельзя делить
-                THROW("Неправильное число; Допустимые значения [1, " << maxNumber << "]");
+			queue.add(number);
+#ifdef MEASURE
+			++numOfNums;
+#endif
+		}
 
-            queue.add(number);
-        }
+		D("Считывание окончено");
+		//ожидание выполнения всех потоков
+		queue.join();
+		result = queue.result();
 
-        D("Считывание окончено");
-        //ожидание выполнения всех потоков
-        queue.join();
-        result = queue.result();
+#ifdef MEASURE
+		end = std::chrono::high_resolution_clock::now();
+#endif
+		D("Получен результат:");
+		for(auto const& pair : result)
+		{
+			for(uint32_t i = 0; i < pair.second; ++i)
+				std::cout << pair.first << '\n';
+		}
 
-        D("Получен результат:");
-        for(auto const& pair : result)
-        {
-            for(uint32_t i = 0; i < pair.second; ++i)
-                std::cout << pair.first << '\n';
-        }
-    }
-    catch(const std::exception& e)
-    {
-        ERR("Ошибка при выполнении программы: " << e.what());
-        return 1;
-    }
-    catch(...)
-    {
-        ERR("Неизвестная ошибка при выполнении программы");
-        return 2;
-    }
+#ifdef MEASURE
+		std::chrono::duration<double> diff = std::chrono::high_resolution_clock::now() - start;
+		std::cout << "ВРЕМЯ ВЫПОЛНЕНИЯ АЛГОРИТМА ДЛЯ " << numOfNums << " ЧИСЕЛ И " << threadNumber << " ПОТОКОВ: " << diff.count() << " секунд\n";
+#endif
+	}
+	catch(const std::exception& e)
+	{
+		ERR("Ошибка при выполнении программы: " << e.what());
+		return 1;
+	}
+	catch(...)
+	{
+		ERR("Неизвестная ошибка при выполнении программы");
+		return 2;
+	}
 
-    return 0;
+	return 0;
 }
 

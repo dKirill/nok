@@ -1,2 +1,4 @@
 build/
-nok.qbs.user
+nok.qbs*
+tests/
+*~*

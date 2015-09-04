@@ -8,7 +8,7 @@
 #define ERRL(x) ERR("thread=" << _thread.get_id() << " " << x);
 
 /***********************************************/
-Thread::Thread(const Computer& computer) : _busy(false), _computer(computer), _number(0), _shouldRun(false), _thread(([this]() { this->run(); }))
+Thread::Thread(const Computer& computer) : _busy(false), _computer(computer), _delegate(0), _number(0), _shouldRun(false), _thread(([this]() { this->run(); }))
 {
 
 }
@@ -16,94 +16,100 @@ Thread::Thread(const Computer& computer) : _busy(false), _computer(computer), _n
 /***********************************************/
 void Thread::add(const NumberInt number)
 {
-    DL("число принято");
-    std::lock_guard<decltype(_mutex)> ulock(_mutex);
-    DL("блокировка пройдена");
+	DL("число принято");
+	std::lock_guard<decltype(_mutex)> ulock(_mutex);
+	DL("блокировка пройдена");
 
-    if(!delegate())
-        THROW("Попытка работы с потоком без делегата");
+	if(!delegate())
+		THROW("Попытка работы с потоком без делегата");
 
-    _number = number;
-    _busy = true;
-    DL("новое число принято на обработку=" << number);
-    _cond.notify_one();
+	_number = number;
+	_busy = true;
+	DL("новое число принято на обработку=" << number);
+	_cond.notify_one();
 }
 
 /***********************************************/
 ThreadDelegate* Thread::delegate() const
 {
-    return _delegate;
+	return _delegate;
 }
 
 /***********************************************/
 void Thread::join()
 {
-    terminate();
-    DL("joined");
+	terminate();
+	DL("joined");
+}
+
+/***********************************************/
+bool Thread::joinable() const
+{
+	return _thread.joinable();
 }
 
 /***********************************************/
 PrimeToAccNumber Thread::nok() const
 {
-    return _nok;
+	return _nok;
 }
 
 /***********************************************/
 void Thread::run()
 {
-    DL("starts");
-    _shouldRun = true;
+	DL("starts");
+	_shouldRun = true;
 
-    while(_shouldRun.value())
-    {
-        DL("блокировка в run()");
-        std::unique_lock<decltype(_mutex)> ulock(_mutex);
-        DL("блокировка в run() пройдена");
+	while(_shouldRun.value())
+	{
+		DL("блокировка в run()");
+		std::unique_lock<decltype(_mutex)> ulock(_mutex);
+		DL("блокировка в run() пройдена");
 
-        if(!_busy.value())
-        {
-            _cond.wait(ulock);
-            continue;
-        }
+		if(!_busy.value())
+		{
+			_cond.wait(ulock);
+			continue;
+		}
 
-        _nok = _computer.nok(_nok, _number.value());
-        DL("nok для " << _number.value() << " подсчитан");
+		_nok = _computer.nok(_nok, _number.value());
+		DL("nok для " << _number.value() << " подсчитан");
 
-        _busy = false;
-        _delegate->threadIsFree(shared_from_this());
-        DL("ожидание сигнала..");
-        _cond.wait(ulock);
-        DL("сигнал получен..");
-    }
+		_busy = false;
+		_delegate->threadIsFree(shared_from_this());
+		DL("ожидание сигнала..");
+		_cond.wait(ulock);
+		DL("сигнал получен..");
+	}
 
-    DL("stops");
+	DL("stops");
 }
 
 /***********************************************/
 void Thread::setDelegate(ThreadDelegate* const delegate)
 {
-    _delegate = delegate;
-    DL("делегат установлен");
-    _delegate->threadIsFree(shared_from_this());
+	_delegate = delegate;
+	DL("делегат установлен");
+	_delegate->threadIsFree(shared_from_this());
 }
 
 /***********************************************/
 void Thread::terminate()
 {
-    DL("вызван terminate");
-    std::unique_lock<decltype(_mutex)> ulock(_mutex);
-    DL("terminate лок пройден");
+	DL("вызван terminate");
+	std::unique_lock<decltype(_mutex)> ulock(_mutex);
+	DL("terminate лок пройден");
 
-    while(_busy.value())
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	while(_busy.value())
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-    _shouldRun = false;
-    DL("terminate:предсигнал");
-    _cond.notify_one();
-    DL("сигнал выдан");
-    ulock.unlock();
-    DL("лок отпущен");
-    _thread.join();
-    DL("std::thread::join пройден");
-    DL("terminated");
+	_shouldRun = false;
+	DL("terminate:предсигнал");
+	_cond.notify_one();
+	DL("сигнал выдан");
+	ulock.unlock();
+	DL("лок отпущен");
+	_thread.join();
+	DL("std::thread::join пройден");
+	DL("terminated");
 }

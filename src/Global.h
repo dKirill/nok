@@ -10,40 +10,36 @@
 /*--------------------------------------------------------------------------*/
 
 //consts
+const uint16_t defaultThreadNumber = 8;
 const uint16_t maxNumber = 10000;
+const uint16_t maxThreadNumber = 1024; //смысла столько делать нет, но чтобы не получать "неожиданные" сегфолты приходится ограничивать
 
 //aliases
-//using NumberInt = uint16_t; //по заданию макс. значение 10000
-//using PrimeToAccNumber = std::map<uint16_t, uint32_t>; //ни к чему 8 байтники
-//using ThreadInt = uint16_t; //макс. кол. потоков 2^16
-
-typedef uint16_t NumberInt;
-typedef std::map<uint16_t, uint32_t> PrimeToAccNumber;
+typedef uint16_t NumberInt; //по заданию макс. значение 10000
+typedef std::map<uint16_t, uint32_t> PrimeToAccNumber; //ни к чему 8 байтники
 typedef uint16_t ThreadInt;
 
 //custom exception
 class Exception : public std::exception
 {
 public:
-    Exception() noexcept { }
-    Exception(const std::string what_) noexcept : _what(what_) { }
-    virtual ~Exception() noexcept /*override*/ { }
+	Exception() noexcept { }
+	Exception(const std::string what_) noexcept : _what(what_) { }
+	virtual ~Exception() noexcept /*override*/ { }
 
-    /** Returns a C-style character string describing the general cause
-                 *  of the current error.  */
-    virtual const char* what() const noexcept /*override*/ { return _what.c_str(); }
+	virtual const char* what() const noexcept /*override*/ { return _what.c_str(); }
 
 private:
-    std::string _what;
+	std::string _what;
 };
 
-//defines
+//defines (ошибки пусть выводит и не в дебаге)
+#define ERR(x) std::cerr << x << '\n';
 #ifdef DEBUG
 #define D(x) std::cout << x << '\n';
-#define ERR(x) std::cerr << x << '\n';
 #else
 #define D(x) ;
-#define ERR(x) ;
+//#define ERR(x) ;
 #endif
 
 #define THROW(x) { std::stringstream ss; ss << "Error: " << x << "; func: " << __PRETTY_FUNCTION__; throw Exception(ss.str()); }
