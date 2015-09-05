@@ -97,14 +97,16 @@ void Thread::setDelegate(ThreadDelegate* const delegate)
 void Thread::terminate()
 {
 	DL("вызван terminate");
-	std::unique_lock<decltype(_mutex)> ulock(_mutex);
+	std::unique_lock<decltype(_mutex)> ulock(_mutex, std::defer_lock);
 	DL("terminate лок пройден");
 
 	while(_busy.value())
 		std::this_thread::sleep_for(std::chrono::milliseconds(10)); //TODO condition
 
 	_shouldRun = false;
-	DL("terminate:предсигнал");
+	DL("terminate:lock");
+	ulock.lock(); //лок нужен чтобы не кинуть сразу 2 нотифая
+	DL("terminate:lock пройден");
 	_cond.notify_one();
 	DL("сигнал выдан");
 	ulock.unlock();
