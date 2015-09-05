@@ -42,8 +42,8 @@ int main(int argc, char* argv[]) //аргументы: количество по
 					THROW("Аргумент не число, а должен быть");
 				}
 
-				if(temp > std::numeric_limits<decltype(threadNumber)>::max() || temp > maxThreadNumber || temp < 1)
-					THROW("Неправильный аргумент; Допустимые значения [1, " << std::numeric_limits<decltype(threadNumber)>::max() << "]\n");
+				if(temp > std::min(std::numeric_limits<decltype(threadNumber)>::max(), maxThreadNumber) || temp < 1)
+					THROW("Неправильный аргумент; Допустимые значения [1, " << std::min(std::numeric_limits<decltype(threadNumber)>::max(), maxThreadNumber) << "]\n");
 
 				threadNumber = temp;
 

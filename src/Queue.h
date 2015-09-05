@@ -23,7 +23,7 @@ public:
 	void setThreadNumber(const ThreadInt threadsNumber);
 
 private:
-
+	std::condition_variable _cond;
 	std::mutex _mutex;
 	ThreadPool _pool;
 	std::queue<NumberInt> _queue;

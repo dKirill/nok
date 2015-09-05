@@ -101,7 +101,7 @@ void Thread::terminate()
 	DL("terminate лок пройден");
 
 	while(_busy.value())
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		std::this_thread::sleep_for(std::chrono::milliseconds(10)); //TODO condition
 
 	_shouldRun = false;
 	DL("terminate:предсигнал");

@@ -20,6 +20,7 @@ void Queue::add(const NumberInt number)
 {
 	std::lock_guard<decltype(_mutex)> guard(_mutex);
 	_queue.push(number);
+	_cond.notify_one();
 	D("Число=" << number << " добавлено в очередь");
 }
 
@@ -30,17 +31,19 @@ void Queue::join()
 
 	while(true) //ждем, пока очередь раздаст все задачи
 	{
-		_mutex.lock();
+		std::unique_lock<decltype(_mutex)> ulock(_mutex);
+
 		empty = _queue.empty();
-		_mutex.unlock();
 
 		if(empty)
 		{
 			_shouldRun = false;
+			_cond.notify_one();
 			break;
 		}
 		else
 		{
+			ulock.unlock();
 			D("Очередь ожидает своего опустошения..");
 			std::this_thread::sleep_for(std::chrono::milliseconds(50)); //TODO condition
 		}
@@ -66,20 +69,16 @@ void Queue::run()
 	while(_shouldRun.value())
 	{
 		NumberInt nextNumber;
-
-		_mutex.lock();
+		std::unique_lock<decltype(_mutex)> ulock(_mutex);
 
 		if(_queue.empty()) //если очередь пуста, немного спим и проверяем необходимость работы еще раз
 		{
-			_mutex.unlock();
-			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+			_cond.wait(ulock);
 			continue;
 		}
 
 		nextNumber = _queue.front();
 		_queue.pop();
-		_mutex.unlock();
-
 		_pool.add(nextNumber);
 	}
 

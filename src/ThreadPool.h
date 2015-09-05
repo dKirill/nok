@@ -22,6 +22,7 @@ public:
 	virtual void threadIsFree(pThread thread)/* override*/;
 
 private:
+	std::condition_variable _cond;
 	Computer _computer;
 	PrimeToAccNumber _nok;
 	std::mutex _mutex;

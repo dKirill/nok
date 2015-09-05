@@ -21,19 +21,16 @@ void ThreadPool::add(const NumberInt number)
 	while(true)
 	{
 		pThread freethread;
-
-		_mutex.lock();
+		std::unique_lock<decltype(_mutex)> ulock(_mutex);
 
 		if(_freeThreads.empty())
 		{
-			_mutex.unlock();
-			std::this_thread::sleep_for(std::chrono::milliseconds(1)); //операции должны выполняться очень быстро. даже 1мс возможно много; TODO condition
+			_cond.wait(ulock);
 			continue;
 		}
 
 		freethread = _freeThreads.front();
 		_freeThreads.pop();
-		_mutex.unlock();
 
 		D("передача числа потоку..");
 		freethread->add(number);
@@ -91,4 +88,5 @@ void ThreadPool::threadIsFree(pThread thread)
 
 	D("поток освободился");
 	_freeThreads.push(thread);
+	_cond.notify_one();
 }
